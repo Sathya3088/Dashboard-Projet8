@@ -1,0 +1,8 @@
+fastapi==0.115.8
+uvicorn==0.34.0
+joblib==1.2.0
+pandas
+imbalanced-learn
+lightgbm==4.6.0
+pytest
+requests
