@@ -6,3 +6,4 @@ imbalanced-learn
 lightgbm==4.6.0
 pytest
 requests
+dash==2.18.2
