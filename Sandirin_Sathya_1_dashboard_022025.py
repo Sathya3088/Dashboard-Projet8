@@ -4,6 +4,7 @@ from dash import Dash, html, dcc, Output, Input
 import plotly.graph_objects as go
 from joblib import load
 import shap
+import os
 
 dataframe = pd.read_csv('data/df.csv')
 # Chargement du modèle :
@@ -186,4 +187,4 @@ def update_graph(n_clicks, client_id, selected_feature):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+    app.run_server(debug=True, port=int(os.environ.get("PORT", 8000)))
