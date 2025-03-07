@@ -187,4 +187,4 @@ def update_graph(n_clicks, client_id, selected_feature):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=int(os.environ.get("PORT", 8000)))
+    app.run_server(debug=True, port=int(os.environ.get("PORT", 8000)))
