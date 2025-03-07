@@ -9,4 +9,4 @@ requests
 dash==2.18.2
 plotly==5.24.1
 shap==0.46.0
-setuptools==68.2.2
+setuptools==70.0.0
