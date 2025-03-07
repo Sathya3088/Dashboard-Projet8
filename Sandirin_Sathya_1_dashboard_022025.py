@@ -38,7 +38,8 @@ app.layout = html.Div([
 
 def update_graph(n_clicks, client_id, selected_feature):
     if n_clicks > 0 and client_id is not None and selected_feature is not None:
-        response = requests.get(f'https://credit-api-fwhmc3cwgyg8a6hw.francecentral-01.azurewebsites.net/predict/{client_id}')
+        API_URL = "https://credit-api-fwhmc3cwgyg8a6hw.francecentral-01.azurewebsites.net"
+        response = requests.get(f"{API_URL}/predict/{client_id}")
         data = response.json()
 
         # Si une erreur est renvoyée, pas de graphique en cas d'erreur
@@ -187,4 +188,4 @@ def update_graph(n_clicks, client_id, selected_feature):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=int(os.environ.get("PORT", 8000)))
+    app.run_server(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=False)
