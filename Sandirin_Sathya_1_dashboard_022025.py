@@ -2,15 +2,8 @@ import requests
 import pandas as pd
 from dash import Dash, html, dcc, Output, Input
 import plotly.graph_objects as go
-from joblib import load
-import shap
-import os
 
 dataframe = pd.read_csv('data/df.csv')
-# Chargement du modèle :
-model = load("model.joblib")
-print(type(model))
-
 app = Dash(__name__)
 
 # Mise en page du Dashboard
@@ -149,36 +142,32 @@ def update_graph(n_clicks, client_id, selected_feature):
             yaxis_title='Fréquence'
         )
 
-        # Récupération des données du client
-        client_data = dataframe[dataframe['SK_ID_CURR'] == client_id]
-        if client_data.empty:
-             return go.Figure(), "Client ID non trouvé.", go.Figure()
-        
-        # Récupérer les valeurs SHAP pour le client
-        client_features = client_data.drop(['TARGET', 'SK_ID_CURR', 'index'], axis=1)
-        assert client_features.shape[1] == 795, "Le nombre de features doit être de 795."
+        # Récupérer les valeurs SHAP
+        shap_values = data['shap_values'][0]
+        feature_names = dataframe.columns.drop(['TARGET', 'SK_ID_CURR','index'])
+        assert len(feature_names) == 795, "Le nombre de features doit être de 795."
 
-        explainer = shap.Explainer(model)
-        shap_values = explainer(client_features.values)
+        # Les 5 features avec les plus grandes valeurs SHAP (positives ou négatives)
+        largest_features = pd.Series(shap_values, index=feature_names).nlargest(5)
+        smallest_features = pd.Series(shap_values, index=feature_names).nsmallest(5)
+        priority_features = pd.concat([largest_features, smallest_features])
 
-        # Sélectionner les 5 features avec la plus grande valeur absolue de SHAP
-        shap_df = pd.DataFrame(shap_values.values, columns=client_features.columns)  # En supposant que 'TARGET' est la dernière colonne
-        top_features = shap_df.abs().mean().nlargest(5).index
+        # Les 5 contributions les plus importantes par la valeur absolue
+        priority_features = priority_features.loc[priority_features.abs().nlargest(5).index]
 
-        # Créer un graphique waterfall
+        # Graphique waterfall
         waterfall_fig = go.Figure(go.Waterfall(
-            x=top_features,
-            y=shap_df[top_features].iloc[0].values,
-            base=0,
-            text=[f'Contribution: {value:.2f}' for value in shap_df[top_features].iloc[0].values],
+            x=priority_features.index,
+            y=priority_features.values,
+            text=priority_features.values,
+            textposition="outside",
+            hoverinfo="x+y+text",
         ))
 
-        # Mettre à jour la mise en page du graphique Waterfall
         waterfall_fig.update_layout(
-            title="Contributions des 5 meilleures features",
-            xaxis_title="Features",
-            yaxis_title="Impact sur la décision",
-            showlegend=False
+            title='5 meilleures Features Locales',
+            xaxis_title='Features',
+            yaxis_title='Contribution SHAP',
         )
 
         return fig, decision_text, comparison_fig, waterfall_fig 
