@@ -6,4 +6,4 @@ apt-get update
 # Installation des dépendances
 apt-get -y install curl
 apt-get -y install python3-distutils
-Sandirin_Sathya_1_dashboard_022025.py
+python Sandirin_Sathya_1_dashboard_022025.py
