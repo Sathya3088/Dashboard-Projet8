@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from dash import Dash, html, dcc, Output, Input
 import plotly.graph_objects as go
+import os
 
 dataframe = pd.read_csv('data/df.csv')
 app = Dash(__name__)
